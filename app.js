@@ -23,6 +23,17 @@ const storeSearch = document.getElementById("storeSearch");
 let allStores = [];
 let markers = [];
 
+// ===============================
+// GOOGLE ANALYTICS TRACKING
+// ===============================
+
+function trackEvent(eventName, eventParams = {}) {
+
+  if (typeof gtag === "function") {
+    gtag("event", eventName, eventParams);
+  }
+
+}
 
 // ===============================
 // LOAD STORE DATA
@@ -129,9 +140,13 @@ function renderStores(stores) {
         <p>☎ ${store.Phone || ""}</p>
 
         <a
-          href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}"
-          target="_blank"
-          rel="noopener noreferrer"
+        href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}"
+        target="_blank"
+        rel="noopener noreferrer"
+        onclick='trackEvent("get_directions", {
+        store_name: ${JSON.stringify(store["Store Name"] || "")},
+        retailer: ${JSON.stringify(store.Retailer || "")}
+        })'
         >
           Get Directions →
         </a>
@@ -185,6 +200,11 @@ function renderStores(stores) {
       // Active current card
       card.classList.add("active");
 
+      trackEvent("store_click", {
+        store_name: store["Store Name"] || "",
+        retailer: store.Retailer || "",
+        address: store.Address || ""
+      });
 
       // Move map to store
       map.flyTo({
@@ -250,50 +270,50 @@ function renderStores(stores) {
 // SEARCH STORE / CITY / AREA
 // ===============================
 
+let searchTimer;
+
 storeSearch.addEventListener("input", function () {
 
   const keyword = this.value
     .trim()
     .toLowerCase();
 
+  clearTimeout(searchTimer);
 
-  // ===============================
-  // EMPTY SEARCH
-  // ===============================
+  searchTimer = setTimeout(() => {
 
-  if (keyword === "") {
+    if (keyword === "") {
+      renderStores(allStores);
+      return;
+    }
 
-    renderStores(allStores);
+    const filtered = allStores.filter(store => {
 
-    return;
-  }
+      const storeName =
+        (store["Store Name"] || "").toLowerCase();
 
+      const retailer =
+        (store.Retailer || "").toLowerCase();
 
-  // ===============================
-  // SEARCH ONLY WITHIN SHEET DATA
-  // ===============================
+      const address =
+        (store.Address || "").toLowerCase();
 
-  const filtered = allStores.filter(store => {
+      return (
+        storeName.includes(keyword) ||
+        retailer.includes(keyword) ||
+        address.includes(keyword)
+      );
 
-    const storeName =
-      (store["Store Name"] || "").toLowerCase();
+    });
 
-    const retailer =
-      (store.Retailer || "").toLowerCase();
+    // Track search
+    trackEvent("store_search", {
+      search_term: keyword,
+      results_count: filtered.length
+    });
 
-    const address =
-      (store.Address || "").toLowerCase();
+    renderStores(filtered);
 
-
-    return (
-      storeName.includes(keyword) ||
-      retailer.includes(keyword) ||
-      address.includes(keyword)
-    );
-
-  });
-
-
-  renderStores(filtered);
+  }, 500);
 
 });
