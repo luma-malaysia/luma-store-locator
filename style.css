@@ -241,6 +241,6 @@ html, body{
 }
 
 .store-card.active{
-    border:2px solid #00A651;   /* Tukar ikut warna brand Luma kalau nak */
+    border:2px solid #3eaff1;   /* Tukar ikut warna brand Luma kalau nak */
     background:#f4fff7;
 }
