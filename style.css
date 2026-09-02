@@ -123,8 +123,14 @@ html, body{
     height:100dvh;
   }
 
+  /* Make sidebar contents behave as direct children */
+  .sidebar{
+    display:contents;
+  }
+
   /* SEARCH */
   .search-box{
+    order:1;
     width:100%;
     flex:none;
     padding:12px;
@@ -143,6 +149,7 @@ html, body{
 
   /* MAP */
   #map{
+    order:2;
     width:100%;
     height:42dvh;
     min-height:260px;
@@ -150,23 +157,15 @@ html, body{
   }
 
   /* STORE LIST */
-  .sidebar{
-    display:flex;
-    flex-direction:column;
-    width:100%;
-    min-width:100%;
-    height:calc(58dvh - 58px);
-    max-height:none;
-    overflow:hidden;
-    border-right:none;
-    background:#ffffff;
-  }
-
   #storeList{
+    order:3;
+    width:100%;
     flex:1;
+    min-height:0;
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
     overscroll-behavior:contain;
+    background:#ffffff;
   }
 
   /* STORE CARD */
@@ -185,7 +184,7 @@ html, body{
     line-height:1.45;
   }
 
-  /* REMOVE HOVER EFFECT ON TOUCH DEVICES */
+  /* Don't use desktop hover effects on phone */
   .store-card:hover{
     transform:none;
     box-shadow:none;
@@ -197,7 +196,6 @@ html, body{
     background:#f4fff7;
   }
 
-  /* NO RESULT */
   .no-result{
     padding:24px 16px;
   }
